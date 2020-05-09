@@ -24,14 +24,25 @@
  */
 package org.squiddev.cobalt.compiler;
 
-import org.squiddev.cobalt.*;
+import org.squiddev.cobalt.Constants;
+import org.squiddev.cobalt.LuaDouble;
+import org.squiddev.cobalt.LuaInteger;
+import org.squiddev.cobalt.LuaString;
+import org.squiddev.cobalt.LuaValue;
+import org.squiddev.cobalt.Prototype;
+import org.squiddev.cobalt.ValueFactory;
 import org.squiddev.cobalt.function.LocalVariable;
+import org.squiddev.cobalt.function.UnwindableCallable;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.squiddev.cobalt.Constants.*;
+import static org.squiddev.cobalt.Constants.TBOOLEAN;
+import static org.squiddev.cobalt.Constants.TINT;
+import static org.squiddev.cobalt.Constants.TNIL;
+import static org.squiddev.cobalt.Constants.TNUMBER;
+import static org.squiddev.cobalt.Constants.TSTRING;
 
 /**
  * Parser for bytecode
@@ -293,6 +304,7 @@ public final class BytecodeLoader {
 		f.is_vararg = is.readUnsignedByte();
 		f.maxstacksize = is.readUnsignedByte();
 		f.code = loadIntArray();
+		f.compiledInstrs = new UnwindableCallable[f.code.length];
 		loadConstants(f);
 		loadDebug(f);
 

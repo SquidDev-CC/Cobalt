@@ -24,8 +24,24 @@
  */
 package org.squiddev.cobalt.debug;
 
-import org.squiddev.cobalt.*;
-import org.squiddev.cobalt.function.*;
+import org.squiddev.cobalt.LuaError;
+import org.squiddev.cobalt.LuaState;
+import org.squiddev.cobalt.LuaString;
+import org.squiddev.cobalt.LuaValue;
+import org.squiddev.cobalt.NonResumableException;
+import org.squiddev.cobalt.OperationHelper;
+import org.squiddev.cobalt.Print;
+import org.squiddev.cobalt.Resumable;
+import org.squiddev.cobalt.UnwindThrowable;
+import org.squiddev.cobalt.ValueFactory;
+import org.squiddev.cobalt.Varargs;
+import org.squiddev.cobalt.function.LuaClosure;
+import org.squiddev.cobalt.function.LuaFunction;
+import org.squiddev.cobalt.function.LuaInterpretedFunction;
+import org.squiddev.cobalt.function.LuaInterpreter;
+import org.squiddev.cobalt.function.Upvalue;
+
+import java.util.stream.IntStream;
 
 /**
  * Each thread will get a DebugState attached to it by the debug library
@@ -253,5 +269,12 @@ public final class DebugFrame {
 		} else {
 			throw new NonResumableException(func == null ? "null" : func.debugName());
 		}
+	}
+
+	public Object[] showBytecode() {
+		return IntStream
+				.range(0, this.closure.getPrototype().code.length)
+				.mapToObj(i -> (this.pc == i ? "->" : "  ") + Print.showOpCode(this.closure.getPrototype(), i))
+				.toArray();
 	}
 }

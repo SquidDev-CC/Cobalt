@@ -29,7 +29,11 @@ import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.UnwindThrowable;
 import org.squiddev.cobalt.function.LuaFunction;
 
-import static org.squiddev.cobalt.debug.DebugFrame.*;
+import static org.squiddev.cobalt.debug.DebugFrame.FLAG_FRESH;
+import static org.squiddev.cobalt.debug.DebugFrame.FLAG_HOOKED;
+import static org.squiddev.cobalt.debug.DebugFrame.FLAG_HOOKYIELD;
+import static org.squiddev.cobalt.debug.DebugFrame.FLAG_HOOKYIELD_LINE;
+import static org.squiddev.cobalt.debug.DebugFrame.FLAG_JAVA;
 
 /**
  * DebugState is associated with a Thread

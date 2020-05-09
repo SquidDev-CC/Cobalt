@@ -25,14 +25,25 @@
 package org.squiddev.cobalt.compiler;
 
 
-import org.squiddev.cobalt.*;
+import org.squiddev.cobalt.Lua;
+import org.squiddev.cobalt.LuaDouble;
+import org.squiddev.cobalt.LuaError;
+import org.squiddev.cobalt.LuaInteger;
+import org.squiddev.cobalt.LuaString;
+import org.squiddev.cobalt.LuaValue;
+import org.squiddev.cobalt.OperationHelper;
+import org.squiddev.cobalt.Prototype;
+import org.squiddev.cobalt.UnwindThrowable;
 import org.squiddev.cobalt.compiler.LexState.ConsControl;
 import org.squiddev.cobalt.compiler.LexState.expdesc;
 import org.squiddev.cobalt.function.LocalVariable;
+import org.squiddev.cobalt.function.UnwindableCallable;
 
-import java.util.Hashtable;
+import java.util.*;
 
-import static org.squiddev.cobalt.Constants.*;
+import static org.squiddev.cobalt.Constants.FALSE;
+import static org.squiddev.cobalt.Constants.NIL;
+import static org.squiddev.cobalt.Constants.TRUE;
 import static org.squiddev.cobalt.Lua.*;
 import static org.squiddev.cobalt.compiler.LuaC.*;
 
@@ -1081,6 +1092,7 @@ public class FuncState {
 		/* put new instruction in code array */
 		if (f.code == null || this.pc + 1 > f.code.length) {
 			f.code = LuaC.realloc(f.code, this.pc * 2 + 1);
+			f.compiledInstrs = new UnwindableCallable[f.code.length];
 		}
 		f.code[this.pc] = instruction;
 		/* save corresponding line information */

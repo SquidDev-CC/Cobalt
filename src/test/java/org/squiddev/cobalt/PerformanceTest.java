@@ -27,9 +27,6 @@ package org.squiddev.cobalt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.squiddev.cobalt.compiler.CompileException;
-
-import java.io.IOException;
 
 public class PerformanceTest {
 	private static final int TOTAL = Integer.parseInt(System.getProperty("cobalt.perfTotal", "1"));
@@ -45,7 +42,7 @@ public class PerformanceTest {
 
 	@ParameterizedTest(name = ParameterizedTest.ARGUMENTS_WITH_NAMES_PLACEHOLDER)
 	@ValueSource(strings = {"binarytrees", "fannkuch", "nbody", "nsieve", "primes"})
-	public void run(String name) throws IOException, CompileException, LuaError, InterruptedException {
+	public void run(String name) throws Exception {
 		System.out.println("[" + name + "]");
 
 		for (int i = 0; i < TOTAL; i++) {

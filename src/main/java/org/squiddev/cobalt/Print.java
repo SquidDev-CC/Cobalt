@@ -88,65 +88,61 @@ public class Print {
 	};
 
 
-	static void printString(PrintStream ps, final LuaString s) {
-
-		ps.print('"');
+	static void showString(StringBuilder sb, final LuaString s) {
+		sb.append('"');
 		for (int i = 0, n = s.length; i < n; i++) {
 			int c = s.bytes[s.offset + i];
 			if (c >= ' ' && c <= '~' && c != '\"' && c != '\\') {
-				ps.print((char) c);
+				sb.append((char) c);
 			} else {
 				switch (c) {
 					case '"':
-						ps.print("\\\"");
+						sb.append("\\\"");
 						break;
 					case '\\':
-						ps.print("\\\\");
+						sb.append("\\\\");
 						break;
 					case 0x0007: /* bell */
-						ps.print("\\a");
+						sb.append("\\a");
 						break;
 					case '\b': /* backspace */
-						ps.print("\\b");
+						sb.append("\\b");
 						break;
 					case '\f':  /* form feed */
-						ps.print("\\f");
+						sb.append("\\f");
 						break;
 					case '\t':  /* tab */
-						ps.print("\\t");
+						sb.append("\\t");
 						break;
 					case '\r': /* carriage return */
-						ps.print("\\r");
+						sb.append("\\r");
 						break;
 					case '\n': /* newline */
-						ps.print("\\n");
+						sb.append("\\n");
 						break;
 					case 0x000B: /* vertical tab */
-						ps.print("\\v");
+						sb.append("\\v");
 						break;
 					default:
-						ps.print('\\');
-						ps.print(Integer.toString(1000 + 0xff & c).substring(1));
+						sb.append('\\');
+						sb.append(Integer.toString(1000 + 0xff & c).substring(1));
 						break;
 				}
 			}
 		}
-		ps.print('"');
+		sb.append('"');
 	}
 
-	static void printValue(PrintStream ps, LuaValue v) {
-		switch (v.type()) {
-			case Constants.TSTRING:
-				printString(ps, (LuaString) v);
-				break;
-			default:
-				ps.print(v.toString());
-
+	static void showValue(StringBuilder sb, LuaValue v) {
+		if (v.type() == Constants.TSTRING) {
+			showString(sb, (LuaString) v);
+		} else {
+			sb.append(v.toString());
 		}
 	}
 
-	static void printConstant(PrintStream ps, Prototype f, int i) {
-		printValue(ps, f.k[i]);
+	static void showConstant(StringBuilder sb, Prototype f, int i) {
+		showValue(sb, f.k[i]);
 	}
 
 	/**
@@ -155,11 +151,21 @@ public class Print {
 	 * @param f the {@link Prototype}
 	 */
 	public static void printCode(Prototype f) {
+		ps.print(showCode(f));
+	}
+
+	public static String showCode(Prototype f) {
+		final StringBuilder sb = new StringBuilder();
+		showCode(sb, f);
+		return sb.toString();
+	}
+
+	public static void showCode(StringBuilder sb, Prototype f) {
 		int[] code = f.code;
 		int pc, n = code.length;
 		for (pc = 0; pc < n; pc++) {
-			printOpCode(f, pc);
-			ps.println();
+			showOpCode(sb, f, pc);
+			sb.append(System.lineSeparator());
 		}
 	}
 
@@ -170,17 +176,19 @@ public class Print {
 	 * @param pc the program counter to look up and print
 	 */
 	public static void printOpCode(Prototype f, int pc) {
-		printOpCode(ps, f, pc);
+		final StringBuilder sb = new StringBuilder();
+		showOpCode(sb, f, pc);
+		ps.print(sb);
 	}
 
 	/**
 	 * Print an opcode in a prototype
 	 *
-	 * @param ps the {@link PrintStream} to print to
+	 * @param sb the {@link StringBuilder} to print to
 	 * @param f  the {@link Prototype}
 	 * @param pc the program counter to look up and print
 	 */
-	public static void printOpCode(PrintStream ps, Prototype f, int pc) {
+	public static void showOpCode(StringBuilder sb, Prototype f, int pc) {
 		int[] code = f.code;
 		int i = code[pc];
 		int o = GET_OPCODE(i);
@@ -190,62 +198,61 @@ public class Print {
 		int bx = GETARG_Bx(i);
 		int sbx = GETARG_sBx(i);
 		int line = getline(f, pc);
-		ps.print("  " + (pc + 1) + "  ");
+		sb.append(' ');
+		sb.append(f.compiledInstrs[pc] != null ? 'c' : ' ');
+		sb.append(pc + 1).append("  ");
 		if (line > 0) {
-			ps.print("[" + line + "]  ");
+			sb.append("[").append(line).append("]  ");
 		} else {
-			ps.print("[-]  ");
+			sb.append("[-]  ");
 		}
-		ps.print(OPNAMES[o] + "  ");
+		sb.append(OPNAMES[o]).append("  ");
 		switch (getOpMode(o)) {
 			case iABC:
-				ps.print(a);
+				sb.append(a);
 				if (getBMode(o) != OpArgN) {
-					ps.print(" " + (ISK(b) ? (-1 - INDEXK(b)) : b));
+					sb.append(" ").append(ISK(b) ? (-1 - INDEXK(b)) : b);
 				}
 				if (getCMode(o) != OpArgN) {
-					ps.print(" " + (ISK(c) ? (-1 - INDEXK(c)) : c));
+					sb.append(" ").append(ISK(c) ? (-1 - INDEXK(c)) : c);
 				}
 				break;
 			case iABx:
 				if (getBMode(o) == OpArgK) {
-					ps.print(a + " " + (-1 - bx));
+					sb.append(a).append(" ").append(-1 - bx);
 				} else {
-					ps.print(a + " " + (bx));
+					sb.append(a).append(" ").append(bx);
 				}
 				break;
 			case iAsBx:
 				if (o == OP_JMP) {
-					ps.print(sbx);
+					sb.append(sbx);
 				} else {
-					ps.print(a + " " + sbx);
+					sb.append(a).append(" ").append(sbx);
 				}
 				break;
 		}
 		switch (o) {
 			case OP_LOADK:
-				ps.print("  ; ");
-				printConstant(ps, f, bx);
+			case OP_GETGLOBAL:
+			case OP_SETGLOBAL:
+				sb.append("  ; ");
+				showConstant(sb, f, bx);
 				break;
 			case OP_GETUPVAL:
 			case OP_SETUPVAL:
-				ps.print("  ; ");
+				sb.append("  ; ");
 				if (f.upvalues.length > b) {
-					printValue(ps, f.upvalues[b]);
+					showValue(sb, f.upvalues[b]);
 				} else {
-					ps.print("-");
+					sb.append("-");
 				}
-				break;
-			case OP_GETGLOBAL:
-			case OP_SETGLOBAL:
-				ps.print("  ; ");
-				printConstant(ps, f, bx);
 				break;
 			case OP_GETTABLE:
 			case OP_SELF:
 				if (ISK(c)) {
-					ps.print("  ; ");
-					printConstant(ps, f, INDEXK(c));
+					sb.append("  ; ");
+					showConstant(sb, f, INDEXK(c));
 				}
 				break;
 			case OP_SETTABLE:
@@ -258,45 +265,51 @@ public class Print {
 			case OP_LT:
 			case OP_LE:
 				if (ISK(b) || ISK(c)) {
-					ps.print("  ; ");
+					sb.append("  ; ");
 					if (ISK(b)) {
-						printConstant(ps, f, INDEXK(b));
+						showConstant(sb, f, INDEXK(b));
 					} else {
-						ps.print("-");
+						sb.append("-");
 					}
-					ps.print(" ");
+					sb.append(" ");
 					if (ISK(c)) {
-						printConstant(ps, f, INDEXK(c));
+						showConstant(sb, f, INDEXK(c));
 					} else {
-						ps.print("-");
+						sb.append("-");
 					}
 				}
 				break;
 			case OP_JMP:
 			case OP_FORLOOP:
 			case OP_FORPREP:
-				ps.print("  ; to " + (sbx + pc + 2));
+				sb.append("  ; to ").append(sbx + pc + 2);
 				break;
 			case OP_CLOSURE:
-				ps.print("  ; " + f.p[bx].getClass().getName());
+				sb.append("  ; ").append(f.p[bx].getClass().getName());
 				break;
 			case OP_SETLIST:
 				if (c == 0) {
-					ps.print("  ; " + code[++pc]);
+					sb.append("  ; ").append(code[++pc]);
 				} else {
-					ps.print("  ; " + c);
+					sb.append("  ; ").append(c);
 				}
 				break;
 			case OP_VARARG:
-				ps.print("  ; is_vararg=" + f.is_vararg);
+				sb.append("  ; is_vararg=").append(f.is_vararg);
 				break;
 			default:
 				break;
 		}
 	}
 
+	public static String showOpCode(Prototype f, int pc) {
+		final StringBuilder sb = new StringBuilder();
+		showOpCode(sb, f, pc);
+		return sb.toString();
+	}
+
 	private static int getline(Prototype f, int pc) {
-		return pc > 0 && f.lineinfo != null && pc < f.lineinfo.length ? f.lineinfo[pc] : -1;
+		return pc >= 0 && f.lineinfo != null && pc < f.lineinfo.length ? f.lineinfo[pc] : -1;
 	}
 
 	static void printHeader(Prototype f) {
@@ -320,12 +333,14 @@ public class Print {
 
 	static void printConstants(Prototype f) {
 		int i, n = f.k.length;
-		ps.print("constants (" + n + ") for " + id(f) + ":\n");
+		final StringBuilder sb = new StringBuilder();
+		sb.append("constants (").append(n).append(") for ").append(id(f)).append(":\n");
 		for (i = 0; i < n; i++) {
-			ps.print("  " + (i + 1) + "  ");
-			printValue(ps, f.k[i]);
-			ps.print("\n");
+			sb.append("  ").append(i + 1).append("  ");
+			showValue(sb, f.k[i]);
+			sb.append("\n");
 		}
+		ps.print(sb.toString());
 	}
 
 	static void printLocals(Prototype f) {
