@@ -29,6 +29,7 @@ import org.squiddev.cobalt.debug.DebugHandler;
 import org.squiddev.cobalt.function.LuaFunction;
 
 import static org.squiddev.cobalt.Constants.*;
+import static org.squiddev.cobalt.LuaDouble.NAN;
 import static org.squiddev.cobalt.LuaDouble.valueOf;
 import static org.squiddev.cobalt.LuaInteger.valueOf;
 import static org.squiddev.cobalt.debug.DebugFrame.FLAG_LEQ;
@@ -261,6 +262,9 @@ public final class OperationHelper {
 		if (tLeft != right.type()) {
 			throw ErrorFactory.compareError(left, right);
 		}
+
+		if (left == right && (tLeft == TNUMBER || tLeft == TSTRING)) return false;
+
 		switch (tLeft) {
 			case TNUMBER:
 				return left.toDouble() < right.toDouble();
@@ -281,6 +285,9 @@ public final class OperationHelper {
 		if (tLeft != right.type()) {
 			throw ErrorFactory.compareError(left, right);
 		}
+
+		if (left == right && (tLeft == TNUMBER || tLeft == TSTRING)) return (tLeft != TNUMBER) || !Double.isNaN(left.toDouble());
+
 		switch (tLeft) {
 			case TNUMBER:
 				return left.toDouble() <= right.toDouble();
@@ -309,6 +316,8 @@ public final class OperationHelper {
 
 	public static boolean eq(LuaState state, LuaValue left, LuaValue right) throws LuaError, UnwindThrowable {
 		int tLeft = left.type();
+		if (left == right) return (tLeft != TNUMBER) || !Double.isNaN(left.toDouble());
+
 		if (tLeft != right.type()) return false;
 
 		switch (tLeft) {
@@ -318,11 +327,9 @@ public final class OperationHelper {
 				return left.toDouble() == right.toDouble();
 			case TBOOLEAN:
 				return left.toBoolean() == right.toBoolean();
-			case TSTRING:
-				return left == right || left.raweq(right);
 			case TUSERDATA:
 			case TTABLE: {
-				if (left == right || left.raweq(right)) return true;
+				if (left.raweq(right)) return true;
 
 				LuaTable leftMeta = left.getMetatable(state);
 				if (leftMeta == null) return false;
@@ -333,8 +340,9 @@ public final class OperationHelper {
 				LuaValue h = leftMeta.rawget(CachedMetamethod.EQ);
 				return !(h.isNil() || h != rightMeta.rawget(CachedMetamethod.EQ)) && OperationHelper.call(state, h, left, right).toBoolean();
 			}
+			case TSTRING:
 			default:
-				return left == right || left.raweq(right);
+				return left.raweq(right);
 		}
 	}
 	//endregion
@@ -412,7 +420,7 @@ public final class OperationHelper {
 	}
 
 	private static boolean checkNumber(LuaValue lua, double value) {
-		return lua.type() == TNUMBER || !Double.isNaN(value);
+		return lua.type() == TNUMBER || (lua.type() == TSTRING && !Double.isNaN(value));
 	}
 	//endregion
 

@@ -383,9 +383,9 @@ public class TypeTest {
 
 	@Test
 	public void testToDouble() {
-		assertDoubleEquals(Double.NaN, somenil.toDouble());
-		assertDoubleEquals(Double.NaN, somefalse.toDouble());
-		assertDoubleEquals(Double.NaN, sometrue.toDouble());
+		assertDoubleEquals(0.0, somenil.toDouble());
+		assertDoubleEquals(0.0, somefalse.toDouble());
+		assertDoubleEquals(0.0, sometrue.toDouble());
 		assertDoubleEquals(0, zero.toDouble());
 		assertDoubleEquals(sampleint, intint.toDouble());
 		assertDoubleEquals((double) samplelong, longdouble.toDouble());
@@ -394,12 +394,12 @@ public class TypeTest {
 		assertDoubleEquals(sampleint, stringint.toDouble());
 		assertDoubleEquals((double) samplelong, stringlong.toDouble());
 		assertDoubleEquals(sampledouble, stringdouble.toDouble());
-		assertDoubleEquals(Double.NaN, thread.toDouble());
-		assertDoubleEquals(Double.NaN, table.toDouble());
-		assertDoubleEquals(Double.NaN, userdataobj.toDouble());
-		assertDoubleEquals(Double.NaN, userdatacls.toDouble());
-		assertDoubleEquals(Double.NaN, somefunc.toDouble());
-		assertDoubleEquals(Double.NaN, someclosure.toDouble());
+		assertDoubleEquals(0.0, thread.toDouble());
+		assertDoubleEquals(0.0, table.toDouble());
+		assertDoubleEquals(0.0, userdataobj.toDouble());
+		assertDoubleEquals(0.0, userdatacls.toDouble());
+		assertDoubleEquals(0.0, somefunc.toDouble());
+		assertDoubleEquals(0.0, someclosure.toDouble());
 	}
 
 	@Test
