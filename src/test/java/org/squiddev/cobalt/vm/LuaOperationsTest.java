@@ -64,20 +64,20 @@ public class LuaOperationsTest {
 	private final LuaValue stringlong = valueOf(samplestringlong);
 	private final LuaValue stringdouble = valueOf(samplestringdouble);
 	private final LuaTable table = ValueFactory.listOf(new LuaValue[]{valueOf("aaa"), valueOf("bbb")});
-	private final LuaFunction somefunc = new ZeroArgFunction() {
-		{
-			env = table;
-		}
-
-		@Override
-		public LuaValue call(LuaState state) {
-			return Constants.NONE;
-		}
-	};
+//	private final LuaFunction somefunc = new ZeroArgFunction() {
+//		{
+//			env = table;
+//		}
+//
+//		@Override
+//		public LuaValue call(LuaState state) {
+//			return Constants.NONE;
+//		}
+//	};
 	private final LuaState state = new LuaState();
-	private final LuaThread thread = new LuaThread(state, somefunc, table);
+//	private final LuaThread thread = new LuaThread(state, somefunc, table);
 	private final Prototype proto = new Prototype();
-	private final LuaClosure someclosure = new LuaInterpretedFunction(proto, table);
+//	private final LuaClosure someclosure = new LuaInterpretedFunction(proto, table);
 	private final LuaUserdata userdataobj = ValueFactory.userdataOf(sampleobject);
 	private final LuaUserdata userdatacls = ValueFactory.userdataOf(sampledata);
 
@@ -146,9 +146,9 @@ public class LuaOperationsTest {
 		assertEquals(samplestringlong.length(), OperationHelper.length(state, stringlong).toInteger());
 		assertEquals(samplestringdouble.length(), OperationHelper.length(state, stringdouble).toInteger());
 		assertEquals(2, table.length());
-		throwsLuaError("length", somefunc);
-		throwsLuaError("length", thread);
-		throwsLuaError("length", someclosure);
+//		throwsLuaError("length", somefunc);
+//		throwsLuaError("length", thread);
+//		throwsLuaError("length", someclosure);
 		throwsLuaError("length", userdataobj);
 		throwsLuaError("length", userdatacls);
 	}
@@ -167,9 +167,9 @@ public class LuaOperationsTest {
 		throwsLuaError("getfenv", stringlong);
 		throwsLuaError("getfenv", stringdouble);
 		throwsLuaError("getfenv", table);
-		assertSame(table, thread.getfenv());
-		assertSame(table, someclosure.getfenv());
-		assertSame(table, somefunc.getfenv());
+//		assertSame(table, thread.getfenv());
+//		assertSame(table, someclosure.getfenv());
+//		assertSame(table, somefunc.getfenv());
 		throwsLuaError("getfenv", userdataobj);
 		throwsLuaError("getfenv", userdatacls);
 	}
@@ -189,15 +189,15 @@ public class LuaOperationsTest {
 		setfenvThrowsLuaError("setfenv", stringlong, table2);
 		setfenvThrowsLuaError("setfenv", stringdouble, table2);
 		setfenvThrowsLuaError("setfenv", table, table2);
-		thread.setfenv(table2);
-		assertSame(table2, thread.getfenv());
-		assertSame(table, someclosure.getfenv());
-		assertSame(table, somefunc.getfenv());
-		someclosure.setfenv(table2);
-		assertSame(table2, someclosure.getfenv());
-		assertSame(table, somefunc.getfenv());
-		somefunc.setfenv(table2);
-		assertSame(table2, somefunc.getfenv());
+//		thread.setfenv(table2);
+//		assertSame(table2, thread.getfenv());
+//		assertSame(table, someclosure.getfenv());
+//		assertSame(table, somefunc.getfenv());
+//		someclosure.setfenv(table2);
+//		assertSame(table2, someclosure.getfenv());
+//		assertSame(table, somefunc.getfenv());
+//		somefunc.setfenv(table2);
+//		assertSame(table2, somefunc.getfenv());
 		setfenvThrowsLuaError("setfenv", userdataobj, table2);
 		setfenvThrowsLuaError("setfenv", userdatacls, table2);
 	}
@@ -227,23 +227,23 @@ public class LuaOperationsTest {
 		OperationHelper.setTable(state, _G, valueOf("a"), aaa);
 		OperationHelper.setTable(state, newenv, valueOf("a"), eee);
 
-		// function tests
-		{
-			LuaFunction f = new ZeroArgFunction() {
-				{
-					env = _G;
-				}
-
-				@Override
-				public LuaValue call(LuaState state) throws LuaError {
-					return OperationHelper.noUnwind(state, () -> OperationHelper.getTable(state, env, valueOf("a")));
-				}
-			};
-			assertEquals(aaa, f.call(state));
-			f.setfenv(newenv);
-			assertEquals(newenv, f.getfenv());
-			assertEquals(eee, f.call(state));
-		}
+//		// function tests
+//		{
+//			LuaFunction f = new ZeroArgFunction() {
+//				{
+//					env = _G;
+//				}
+//
+//				@Override
+//				public LuaValue call(LuaState state) throws LuaError {
+//					return OperationHelper.noUnwind(state, () -> OperationHelper.getTable(state, env, valueOf("a")));
+//				}
+//			};
+//			assertEquals(aaa, f.call(state));
+//			f.setfenv(newenv);
+//			assertEquals(newenv, f.getfenv());
+//			assertEquals(eee, f.call(state));
+//		}
 
 		// closure tests
 		{
@@ -259,7 +259,7 @@ public class LuaOperationsTest {
 		// those closures created not in any other function get the thread's enviroment
 		Prototype p2 = createPrototype("return loadstring('return a')", "threadtester");
 		{
-			LuaThread t = new LuaThread(state, new LuaInterpretedFunction(p2, _G), _G);
+			LuaThread t = new LuaThread(state, new LuaInterpretedFunction(p2, _G));
 			Varargs v = LuaThread.run(t, Constants.NONE);
 			LuaValue f = v.arg(1);
 			assertEquals(Constants.TFUNCTION, f.type());
@@ -267,19 +267,9 @@ public class LuaOperationsTest {
 			assertEquals(_G, f.getfenv());
 		}
 		{
-			// change the thread environment after creation!
-			LuaThread t = new LuaThread(state, new LuaInterpretedFunction(p2, _G), _G);
-			t.setfenv(newenv);
-			Varargs v = LuaThread.run(t, Constants.NONE);
-			LuaValue f = v.arg(1);
-			assertEquals(Constants.TFUNCTION, f.type());
-			assertEquals(eee, OperationHelper.call(state, f));
-			assertEquals(newenv, f.getfenv());
-		}
-		{
 			// let the closure have a different environment from the thread
 			Prototype p3 = createPrototype("return function() return a end", "envtester");
-			LuaThread t = new LuaThread(state, new LuaInterpretedFunction(p3, newenv), _G);
+			LuaThread t = new LuaThread(state, new LuaInterpretedFunction(p3, newenv));
 			Varargs v = LuaThread.run(t, Constants.NONE);
 			LuaValue f = v.arg(1);
 			assertEquals(Constants.TFUNCTION, f.type());

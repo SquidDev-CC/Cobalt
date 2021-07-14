@@ -67,7 +67,7 @@ public class TypeTest {
 			return NONE;
 		}
 	};
-	private final LuaThread thread = new LuaThread(new LuaState(), somefunc, table);
+	private final LuaThread thread = new LuaThread(new LuaState(), somefunc);
 	private final LuaClosure someclosure = new LuaInterpretedFunction(new Prototype());
 	private final LuaUserdata userdataobj = userdataOf(sampleobject);
 	private final LuaUserdata userdatacls = userdataOf(sampledata);

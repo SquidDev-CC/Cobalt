@@ -141,7 +141,7 @@ public class CoroutineTest {
 					LuaThread.suspend(state);
 					return Constants.NONE;
 				case 1: { // run
-					LuaThread thread = new LuaThread(state, args.first().checkFunction(), getfenv());
+					LuaThread thread = new LuaThread(state, args.first().checkFunction());
 					di.state = thread;
 					Varargs value = Constants.NONE;
 					while (thread.isAlive()) value = LuaThread.resume(state, thread, value);

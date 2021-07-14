@@ -54,11 +54,8 @@
 -		error(123,2)	...123...
 ====== getfenv ======
 --- checkallpass
--		getfenv(nil)	<table>
--		getfenv(<function>)	<table>
 -		getfenv(<function>)	<table>
 -		getfenv(0)	<table>
--		getfenv(1)	<table>
 --- checkallerrors
 -		getfenv(true)	...bad argument...
 -		getfenv(<table>)	...bad argument...

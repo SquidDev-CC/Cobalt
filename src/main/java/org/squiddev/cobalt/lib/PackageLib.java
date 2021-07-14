@@ -96,7 +96,6 @@ public class PackageLib implements LuaLibrary {
 		PackageLib lib;
 
 		public PkgLib1(LuaTable env, String name, int opcode, PackageLib lib) {
-			this.env = env;
 			this.name = name;
 			this.opcode = opcode;
 			this.lib = lib;
@@ -114,7 +113,7 @@ public class PackageLib implements LuaLibrary {
 						t.setMetatable(state, m = ValueFactory.tableOf());
 					}
 					LuaTable mt = m;
-					noUnwind(state, () -> OperationHelper.setTable(state, mt, Constants.INDEX, state.getCurrentThread().getfenv()));
+					noUnwind(state, () -> OperationHelper.setTable(state, mt, Constants.INDEX, state.globalTable));
 					return Constants.NONE;
 				}
 			}
@@ -126,7 +125,6 @@ public class PackageLib implements LuaLibrary {
 		PackageLib lib;
 
 		public PkgLibV(LuaTable env, String name, int opcode, PackageLib lib) {
-			this.env = env;
 			this.name = name;
 			this.opcode = opcode;
 			this.lib = lib;
@@ -209,7 +207,7 @@ public class PackageLib implements LuaLibrary {
 		LuaTable module;
 		if (!value.isTable()) { /* not found? */
 			/* try global variable (and create one if it does not exist) */
-			LuaTable globals = state.getCurrentThread().getfenv();
+			LuaTable globals = state.globalTable;
 			module = findtable(state, globals, modname);
 			if (module == null) {
 				throw new LuaError("name conflict for module '" + modname + "'");

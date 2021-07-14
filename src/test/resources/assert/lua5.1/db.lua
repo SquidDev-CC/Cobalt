@@ -106,7 +106,7 @@ then
 else
   a=2
 end
-]], { 2, 4, 7 })
+]], { 2, 3, 4, 7 })
 
 test([[--
 if nil then
@@ -132,7 +132,7 @@ a=1
 while a<=3 do
   a=a+1
 end
-]], { 2, 3, 4, 3, 4, 3, 4, 3, 5 })
+]], { 1, 2, 3, 4, 3, 4, 3, 4, 3, 5 })
 
 test([[while math.sin(1) do
   if math.sin(1)
@@ -140,7 +140,7 @@ test([[while math.sin(1) do
     break
   end
 end
-a=1]], { 1, 2, 4, 7 })
+a=1]], { 1, 2, 3, 7 })
 
 test([[for i=1,3 do
   a=i
@@ -204,8 +204,11 @@ function f(a, b)
 	assert(debug.setlocal(2, 3, "pera") == "AA" .. "AA")
 	assert(debug.setlocal(2, 4, "ma��") == "B")
 	x = debug.getinfo(2)
-	assert(x.func == g and x.what == "Lua" and x.name == 'g' and
-			x.nups == 0 and string.find(x.source, "^@.*db%.lua"))
+	assert(x.func == g)
+	assert(x.what == "Lua")
+	assert(x.name == 'g')
+	assert(x.nups == 1)
+	assert(string.find(x.source, "^@.*db%.lua"))
 	glob = glob + 1
 	assert(debug.getinfo(1, "l").currentline == L + 1)
 	assert(debug.getinfo(1, "l").currentline == L + 2)

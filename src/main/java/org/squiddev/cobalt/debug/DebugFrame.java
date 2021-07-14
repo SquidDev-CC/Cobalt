@@ -220,7 +220,7 @@ public final class DebugFrame {
 		if (previous == null || previous.closure == null || previous.pc < 0) return null;
 
 		int stackpos = (previous.closure.getPrototype().code[previous.pc] >> 6) & 0xff;
-		return DebugHelpers.getFuncName(previous, stackpos);
+		return previous.closure.getPrototype().isLua52 ? DebugHelpers52.getFuncName(previous, stackpos) : DebugHelpers.getFuncName(previous, stackpos);
 	}
 
 	public String sourceLine() {

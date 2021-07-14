@@ -27,6 +27,7 @@ package org.squiddev.cobalt;
 import org.squiddev.cobalt.debug.DebugFrame;
 import org.squiddev.cobalt.debug.DebugHandler;
 import org.squiddev.cobalt.debug.DebugHelpers;
+import org.squiddev.cobalt.debug.DebugHelpers52;
 
 /**
  * Factory class for errors
@@ -106,7 +107,7 @@ public class ErrorFactory {
 			DebugFrame info = DebugHandler.getDebugState(state).getStack();
 			if (info != null && info.closure != null) {
 				if (stack < info.closure.getPrototype().maxstacksize) {
-					kind = DebugHelpers.getObjectName(info, stack);
+					kind = info.closure.getPrototype().isLua52 ? DebugHelpers52.getObjectName(info, stack) : DebugHelpers.getObjectName(info, stack);
 				}
 			}
 		}

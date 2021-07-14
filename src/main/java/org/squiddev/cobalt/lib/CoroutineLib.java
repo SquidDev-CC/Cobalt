@@ -84,7 +84,7 @@ public class CoroutineLib extends ResumableVarArgFunction<Object> implements Lua
 		switch (opcode) {
 			case CREATE: {
 				final LuaFunction func = args.arg(1).checkFunction();
-				return new LuaThread(state, func, state.getCurrentThread().getfenv());
+				return new LuaThread(state, func);
 			}
 			case RESUME: {
 				di.flags |= FLAG_YPCALL;
@@ -107,10 +107,8 @@ public class CoroutineLib extends ResumableVarArgFunction<Object> implements Lua
 				return LuaThread.yield(state, args);
 			case WRAP: {
 				final LuaFunction func = args.arg(1).checkFunction();
-				final LuaTable env = func.getfenv();
-				final LuaThread thread = new LuaThread(state, func, env);
+				final LuaThread thread = new LuaThread(state, func);
 				CoroutineLib cl = new CoroutineLib(thread);
-				cl.setfenv(env);
 				cl.name = "wrapped";
 				cl.opcode = WRAPPED;
 				return cl;

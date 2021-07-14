@@ -49,7 +49,7 @@ public class MetatableTest {
 		}
 	};
 	private final LuaState state = new LuaState();
-	private final LuaThread thread = new LuaThread(state, function, table);
+	private final LuaThread thread = new LuaThread(state, function);
 	private final LuaClosure closure = new LuaInterpretedFunction(new Prototype());
 	private final LuaUserdata userdata = ValueFactory.userdataOf(sampleobject);
 	private final LuaUserdata userdatamt = ValueFactory.userdataOf(sampledata, table);

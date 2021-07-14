@@ -83,7 +83,7 @@ debug.getinfo(1)
     currentline: 162
     linedefined: 159
     lastlinedefined: 179
-    nups: 4
+    nups: 5
     func: function
 debug.getinfo(1,"")
 debug.getinfo(1,"l")
@@ -98,7 +98,7 @@ debug.getinfo(2)
     currentline: 182
     linedefined: 152
     lastlinedefined: 184
-    nups: 5
+    nups: 6
     func: function
 debug.getinfo(2,"l")
     currentline: 182
@@ -162,7 +162,7 @@ true
     currentline: -1
     linedefined: 159
     lastlinedefined: 179
-    nups: 4
+    nups: 5
     func: function
 debug.getinfo(test)
 true
@@ -172,6 +172,6 @@ true
     currentline: -1
     linedefined: 152
     lastlinedefined: 184
-    nups: 5
+    nups: 6
     func: function
 ----- debug.sethook, debug.gethook

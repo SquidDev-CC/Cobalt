@@ -28,6 +28,7 @@ public class LuaUserdata extends LuaValue {
 
 	public final Object instance;
 	public LuaTable metatable;
+	public LuaTable uservalue;
 
 	public LuaUserdata(Object obj) {
 		super(Constants.TUSERDATA);

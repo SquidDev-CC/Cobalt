@@ -167,6 +167,10 @@ public class Print {
 	 * @param pc the program counter to look up and print
 	 */
 	public static void printOpcode(PrintStream ps, Prototype f, int pc) {
+		if (f.isLua52) {
+			Print52.printOpcode(ps, f, pc);
+			return;
+		}
 		int[] code = f.code;
 		int i = code[pc];
 		int o = GET_OPCODE(i);

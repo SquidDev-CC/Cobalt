@@ -160,7 +160,7 @@ assert(coroutine.running() == nil)
 
 
 -- tests for global environment
-
+--[[
 local function foo (a)
   setfenv(0, a)
   coroutine.yield(getfenv())
@@ -175,7 +175,7 @@ local a = {}
 assert(f(a) == _G)
 local a,b = pcall(f)
 assert(a and b == _G)
-
+]]
 
 -- tests for multiple yield/resume arguments
 
@@ -367,7 +367,7 @@ if not T then
 else
 
   local turn
-  
+
   function fact (t, x)
     assert(turn == t)
     if x == 0 then return 1
@@ -407,6 +407,7 @@ _X()
 
 
 -- coroutine environments
+--[[
 co = coroutine.create(function ()
        coroutine.yield(getfenv(0))
        return loadstring("return a")()
@@ -416,7 +417,7 @@ a = {a = 15}
 debug.setfenv(co, a)
 assert(debug.getfenv(co) == a)
 assert(select(2, coroutine.resume(co)) == a)
-assert(select(2, coroutine.resume(co)) == a.a)
+assert(select(2, coroutine.resume(co)) == a.a)]]
 
 
 print'OK'

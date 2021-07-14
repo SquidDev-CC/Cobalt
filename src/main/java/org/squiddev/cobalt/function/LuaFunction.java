@@ -42,16 +42,12 @@ import org.squiddev.cobalt.debug.DebugState;
  * @see LuaInterpretedFunction
  */
 public abstract class LuaFunction extends LuaValue implements DebugHook {
-	protected LuaTable env;
-
 	public LuaFunction() {
 		super(Constants.TFUNCTION);
-		this.env = null;
 	}
 
 	public LuaFunction(LuaTable env) {
 		super(Constants.TFUNCTION);
-		this.env = env;
 	}
 
 	@Override
@@ -69,14 +65,14 @@ public abstract class LuaFunction extends LuaValue implements DebugHook {
 		return state.functionMetatable;
 	}
 
-	@Override
+	@Override @Deprecated
 	public LuaTable getfenv() {
-		return env;
+		return null;
 	}
 
-	@Override
+	@Override @Deprecated
 	public void setfenv(LuaTable env) {
-		this.env = env != null ? env : null;
+
 	}
 
 	public String debugName() {
@@ -197,6 +193,11 @@ public abstract class LuaFunction extends LuaValue implements DebugHook {
 	@Override
 	public void onCall(LuaState state, DebugState ds, DebugFrame frame) throws LuaError, UnwindThrowable {
 		call(state, CALL);
+	}
+
+	@Override
+	public void onTailCall(LuaState state, DebugState ds, DebugFrame frame) throws LuaError, UnwindThrowable {
+		call(state, TAILCALL);
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import org.squiddev.cobalt.Prototype;
 import org.squiddev.cobalt.function.LuaClosure;
 import org.squiddev.cobalt.function.LuaFunction;
 import org.squiddev.cobalt.function.LuaInterpretedFunction;
+import org.squiddev.cobalt.function.Upvalue;
 import org.squiddev.cobalt.lib.jse.JsePlatform;
 
 import java.io.IOException;
@@ -73,7 +74,6 @@ public final class LoadState {
 	 * @see #load(InputStream, LuaString, LuaString, LuaTable)
 	 */
 	public interface LuaCompiler {
-
 		/**
 		 * Load into a Closure or LuaFunction from a Stream and initializes the environment
 		 *
@@ -129,6 +129,9 @@ public final class LoadState {
 		Prototype p = loadBinaryChunk(firstByte, stream, name);
 		LuaInterpretedFunction closure = new LuaInterpretedFunction(p, env);
 		closure.nilUpvalues();
+		if (p.isLua52 && p.nups == 1) {
+			closure.setUpvalue(0, new Upvalue(env));
+		}
 		return closure;
 	}
 

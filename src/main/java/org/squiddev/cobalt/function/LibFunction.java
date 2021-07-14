@@ -188,7 +188,6 @@ public abstract class LibFunction extends LuaFunction {
 			LibFunction f = factory.get();
 			f.opcode = firstOpcode + i;
 			f.name = names[i];
-			f.env = env;
 			env.rawset(f.name, f);
 		}
 	}

@@ -181,7 +181,7 @@ public class OrphanedThreadTest {
 
 		function = LoadState.load(state, new ByteArrayInputStream(script.getBytes()), "script", env);
 
-		LuaThread thread = new LuaThread(state, function, env);
+		LuaThread thread = new LuaThread(state, function);
 
 		LuaThread.run(thread, NONE);
 
@@ -195,7 +195,7 @@ public class OrphanedThreadTest {
 	}
 
 	private void doTest(boolean secondOk, LuaValue secondValue) throws Exception {
-		LuaThread thread = new LuaThread(state, function, env);
+		LuaThread thread = new LuaThread(state, function);
 		WeakReference<LuaThread> luaThreadRef = new WeakReference<>(thread);
 		WeakReference<LuaValue> luaFuncRef = new WeakReference<>(function);
 		assertNotNull(luaThreadRef.get());

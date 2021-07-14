@@ -79,7 +79,7 @@ local function foo()
 	assertEquals(getfenv(1), getfenv(foo))
 	assertEquals(getfenv(2), _G)
 end
-setfenv(foo, { getfenv = getfenv, print = print, _G = _G })
+setfenv(foo, { getfenv = getfenv, print = print, _G = _G, tostring = tostring, pcall = pcall, error = error, assert = assert })
 foo()
 
 local function tracebackVerbose(x)

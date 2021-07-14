@@ -59,6 +59,8 @@ public final class Prototype {
 	public int numparams;
 	public int is_vararg;
 	public int maxstacksize;
+	public boolean isLua52;
+	public int[] upvalue_info;
 
 	public LuaString sourceShort() {
 		return getShortName(source);

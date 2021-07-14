@@ -320,7 +320,7 @@ char	good	\<=]
 char	empty	
 char	table	false-string
 char	nil	false-string
-dump	good	LuaQ
+dump	good	LuaR
 dump	empty	false-string
 dump	table	false-string
 dump	nil	false-string

@@ -25,6 +25,7 @@
 package org.squiddev.cobalt.function;
 
 import org.squiddev.cobalt.*;
+import org.squiddev.cobalt.compiler.LexState;
 import org.squiddev.cobalt.compiler.LoadState;
 import org.squiddev.cobalt.compiler.LuaC;
 import org.squiddev.cobalt.debug.DebugFrame;
@@ -99,7 +100,8 @@ public final class LuaInterpretedFunction extends LuaClosure implements Resumabl
 
 	public LuaInterpretedFunction(Prototype p) {
 		this.p = p;
-		this.upvalues = p.nups > 0 ? new Upvalue[p.nups] : NO_UPVALUES;
+		if (p.isLua52) this.upvalues = p.nups > 0 ? new Upvalue[p.nups] : NO_UPVALUES;
+        else this.upvalues = new Upvalue[p.nups + 1];
 	}
 
 	/**
@@ -111,14 +113,26 @@ public final class LuaInterpretedFunction extends LuaClosure implements Resumabl
 	public LuaInterpretedFunction(Prototype p, LuaTable env) {
 		super(env);
 		this.p = p;
-		this.upvalues = p.nups > 0 ? new Upvalue[p.nups] : NO_UPVALUES;
+		if (p.isLua52) {
+			this.upvalues = p.nups > 0 ? new Upvalue[p.nups] : NO_UPVALUES;
+			if (env != null) {
+				for (int i = 0; i < p.nups && i < p.upvalues.length; i++) {
+					if (p.upvalues[i].equals(LuaString.valueOf("_ENV"))) {
+						this.upvalues[i] = new Upvalue(env);
+					}
+				}
+			}
+		} else {
+			this.upvalues = new Upvalue[p.nups + 1];
+			this.upvalues[0] = new Upvalue(env);
+		}
 	}
 
 	public void nilUpvalues() {
 		int nups = p.nups;
 		if (nups > 0) {
 			Upvalue[] upvalues = this.upvalues;
-			for (int i = 0; i < nups; i++) {
+			for (int i = p.isLua52 ? 0 : 1; i < nups; i++) {
 				upvalues[i] = new Upvalue(Constants.NIL);
 			}
 		}
@@ -150,13 +164,39 @@ public final class LuaInterpretedFunction extends LuaClosure implements Resumabl
 	}
 
 	@Override
+	public LuaTable getfenv() {
+		if (!p.isLua52) return (LuaTable)upvalues[0].getValue();
+		else {
+			for (int i = 0; i < p.nups && i < p.upvalues.length; i++) {
+				if (p.upvalues[i].equals(LexState.ENV)) {
+					return (LuaTable)upvalues[i].getValue();
+				}
+			}
+			return null; // TODO: maybe this should return _G (state.globalTable) instead?
+		}
+	}
+
+	@Override
+	public void setfenv(LuaTable env) {
+		if (env == null) throw new NullPointerException("environment must not be null");
+		if (!p.isLua52) upvalues[0] = new Upvalue(env);
+		else {
+			for (int i = 0; i < p.nups && i < p.upvalues.length; i++) {
+				if (p.upvalues[i].equals(LexState.ENV)) {
+					upvalues[i] = new Upvalue(env);
+				}
+			}
+		}
+	}
+
+	@Override
 	public Upvalue getUpvalue(int i) {
-		return upvalues[i];
+		return upvalues[i+(p.isLua52 ? 0 : 1)];
 	}
 
 	@Override
 	public void setUpvalue(int i, Upvalue upvalue) {
-		upvalues[i] = upvalue;
+		upvalues[i+(p.isLua52 ? 0 : 1)] = upvalue;
 	}
 
 	@Override

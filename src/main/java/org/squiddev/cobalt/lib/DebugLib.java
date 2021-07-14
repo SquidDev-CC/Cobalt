@@ -58,11 +58,13 @@ public class DebugLib extends VarArgFunction implements LuaLibrary {
 		"getmetatable",
 		"getregistry",
 		"getupvalue",
+		"getuservalue",
 		"setfenv",
 		"sethook",
 		"setlocal",
 		"setmetatable",
 		"setupvalue",
+		"setuservalue",
 		"traceback",
 		"upvalueid",
 		"upvaluejoin",
@@ -119,20 +121,24 @@ public class DebugLib extends VarArgFunction implements LuaLibrary {
 			case 7:
 				return _getupvalue(args);
 			case 8:
-				return _setfenv(args);
+				return _getuservalue(args);
 			case 9:
-				return _sethook(state, args);
+				return _setfenv(args);
 			case 10:
-				return _setlocal(state, args);
+				return _sethook(state, args);
 			case 11:
-				return _setmetatable(state, args);
+				return _setlocal(state, args);
 			case 12:
-				return _setupvalue(args);
+				return _setmetatable(state, args);
 			case 13:
-				return _traceback(state, args);
+				return _setupvalue(args);
 			case 14:
-				return upvalueId(args);
+				return _setuservalue(args);
 			case 15:
+				return _traceback(state, args);
+			case 16:
+				return upvalueId(args);
+			case 17:
 				return upvalueJoin(args);
 			default:
 				return NONE;
@@ -394,8 +400,8 @@ public class DebugLib extends VarArgFunction implements LuaLibrary {
 
 	private static LuaString findupvalue(LuaClosure c, int up) {
 		Prototype p = c.getPrototype();
-		if (up > 0 && p.upvalues != null && up <= p.upvalues.length) {
-			return p.upvalues[up - 1];
+		if (up > 0 && p.upvalues != null && up + (p.isLua52 ? 0 : 1) <= p.upvalues.length) {
+			return p.upvalues[up - 1 + (p.isLua52 ? 0 : 1)];
 		} else {
 			return null;
 		}
@@ -470,5 +476,17 @@ public class DebugLib extends VarArgFunction implements LuaLibrary {
 
 		closure1.setUpvalue(upvalue1, closure2.getUpvalue(upvalue2));
 		return NONE;
+	}
+
+	private static LuaTable _getuservalue(Varargs args) throws LuaError {
+		args.arg(1).checkUserdata();
+		return ((LuaUserdata)args.arg(1)).uservalue;
+	}
+
+	private static LuaValue _setuservalue(Varargs args) throws LuaError {
+		LuaValue val = args.arg(1);
+		val.checkUserdata();
+		((LuaUserdata)val).uservalue = args.arg(2).checkTable();
+		return val;
 	}
 }

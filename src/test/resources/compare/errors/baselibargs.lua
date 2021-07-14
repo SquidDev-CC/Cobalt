@@ -29,7 +29,8 @@ checkallerrors('error', { { 123 }, { nil, 1, 2, n = 3 } }, 123)
 
 -- getfenv
 banner('getfenv')
-checkallpass('getfenv', { { nil, print, function() end, 0, 1, 2, n = 5 } })
+--checkallpass('getfenv', { { nil, print, function() end, 0, 1, 2, n = 4 } })
+checkallpass('getfenv', { { function() return _ENV end, 0 } }) -- Java functions no longer have environments (including pcall, which was position 1)
 checkallerrors('getfenv', { { true, {}, 'abc' } }, 'bad argument')
 
 -- getmetatable

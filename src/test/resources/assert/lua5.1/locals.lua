@@ -65,23 +65,24 @@ do
   assert(b.A == 11)   -- `real' global
   local g
   local function f () assert(setfenv(2, {a='10'}) == g) end
-  g = function () f(); _G.assert(_G.getfenv(1).a == '10') end
+  g = function () f(); _G.assert(_G.getfenv(1).a == '10'); return _ENV end
   g(); assert(getfenv(g).a == '10')
 end
 
 -- test for global table of loaded chunks
+--[[
 local function foo (s)
   return loadstring(s)
 end
 
 assert(getfenv(foo("")) == _G)
-local a = {loadstring = loadstring} 
+local a = {loadstring = loadstring}
 setfenv(foo, a)
 assert(getfenv(foo("")) == _G)
 setfenv(0, a)  -- change global environment
 assert(getfenv(foo("")) == a)
 setfenv(0, _G)
-
+]]
 
 -- testing limits for special instructions
 
@@ -109,7 +110,7 @@ print'+'
 if rawget(_G, "querytab") then
   -- testing clearing of dead elements from tables
   collectgarbage("stop")   -- stop GC
-  local a = {[{}] = 4, [3] = 0, alo = 1, 
+  local a = {[{}] = 4, [3] = 0, alo = 1,
              a1234567890123456789012345678901234567890 = 10}
 
   local t = querytab(a)

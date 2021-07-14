@@ -227,6 +227,20 @@ public final class DebugState {
 		frame.flags &= ~FLAG_HOOKED;
 	}
 
+	public void hookTailCall(DebugFrame frame) throws LuaError, UnwindThrowable {
+		inhook = true;
+		frame.flags |= FLAG_HOOKED;
+		try {
+			hookfunc.onTailCall(state, this, frame);
+		} catch (LuaError | RuntimeException e) {
+			inhook = false;
+			throw e;
+		}
+
+		inhook = false;
+		frame.flags &= ~FLAG_HOOKED;
+	}
+
 	void hookReturn(DebugFrame frame) throws LuaError, UnwindThrowable {
 		inhook = true;
 		frame.flags |= FLAG_HOOKED;

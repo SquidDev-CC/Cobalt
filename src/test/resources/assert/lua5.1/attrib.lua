@@ -142,6 +142,7 @@ end
 
 local function import(...)
   local f = {...}
+  local _G = _G
   return function (m)
     for i=1, #f do m[f[i]] = _G[f[i]] end
   end
@@ -203,7 +204,7 @@ else
   module("lib1.sub", package.seeall)
   assert(_M == fs)
   setfenv(1, _G)
- 
+
 end
 f, err, when = package.loadlib("donotexist", p.."xuxu")
 assert(not f and type(err) == "string" and (when == "open" or when == "absent"))

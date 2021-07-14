@@ -107,9 +107,9 @@ needcheck 	string_char(3)	3
 -		string_char(6.7,<thread>)	...bad argument...
 ====== string.dump ======
 --- checkallpass
--		string.dump(<function>)	'LuaQ
+-		string.dump(<function>)	'LuaR
 --- checkallpass
--		string.dump(<function>)	'LuaQ
+-		string.dump(<function>)	'LuaR
 --- checkallerrors
 -		string.dump(nil)	...bad argument...
 -		string.dump('abc')	...bad argument...

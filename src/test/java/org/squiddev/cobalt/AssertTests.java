@@ -130,6 +130,7 @@ public class AssertTests {
 	@ParameterizedTest(name = ParameterizedTest.ARGUMENTS_WITH_NAMES_PLACEHOLDER)
 	@ValueSource(strings = {
 		"bitwise",
+		"goto",
 	})
 	public void lua52(String name) throws Exception {
 		ScriptHelper helpers = new ScriptHelper("/assert/lua5.2/");

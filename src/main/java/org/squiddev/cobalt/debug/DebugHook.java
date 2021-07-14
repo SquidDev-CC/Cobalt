@@ -36,10 +36,10 @@ import static org.squiddev.cobalt.ValueFactory.valueOf;
  */
 public interface DebugHook {
 	LuaString CALL = valueOf("call");
+	LuaString TAILCALL = valueOf("tail call");
 	LuaString LINE = valueOf("line");
 	LuaString COUNT = valueOf("count");
 	LuaString RETURN = valueOf("return");
-	LuaString TAILRETURN = valueOf("tail return");
 
 	/**
 	 * Called after entering a function
@@ -51,6 +51,17 @@ public interface DebugHook {
 	 * @throws UnwindThrowable If this hook transfers control to another coroutine.
 	 */
 	void onCall(LuaState state, DebugState ds, DebugFrame frame) throws LuaError, UnwindThrowable;
+
+	/**
+	 * Called after entering a function by means of tail call
+	 *
+	 * @param state Current lua state
+	 * @param ds    The current debug state
+	 * @param frame The current frame
+	 * @throws LuaError On a runtime error.
+	 * @throws UnwindThrowable If this hook transfers control to another coroutine.
+	 */
+	void onTailCall(LuaState state, DebugState ds, DebugFrame frame) throws LuaError, UnwindThrowable;
 
 	/**
 	 * Called before exiting a function

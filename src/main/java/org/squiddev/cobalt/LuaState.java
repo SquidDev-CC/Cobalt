@@ -134,6 +134,11 @@ public final class LuaState {
 	 */
 	boolean abandoned;
 
+	/**
+	 * The global table for the state
+	 */
+	public LuaTable globalTable;
+
 	public LuaState() {
 		this(new LuaState.Builder());
 	}
@@ -153,6 +158,7 @@ public final class LuaState {
 		this.debug = builder.debug;
 		this.timezone = builder.timezone;
 		this.threader = new YieldThreader(builder.coroutineExecutor);
+		this.globalTable = builder.globalTable;
 	}
 
 	/**
@@ -187,18 +193,19 @@ public final class LuaState {
 	/**
 	 * Setup the main thread
 	 *
-	 * @param environment The main thread to use
+	 * @param globals The global table to use
 	 * @see #getMainThread()
 	 * @see #getCurrentThread()
 	 */
-	public void setupThread(LuaTable environment) {
+	public void setupThread(LuaTable globals) {
 		if (mainThread != null && mainThread.isAlive()) {
 			throw new IllegalStateException("State already has main thread");
 		}
 
-		LuaThread thread = new LuaThread(this, environment);
+		LuaThread thread = new LuaThread(this);
 		mainThread = thread;
 		currentThread = thread;
+		globalTable = globals;
 	}
 
 	public static LuaState.Builder builder() {
@@ -230,6 +237,7 @@ public final class LuaState {
 		private DebugHandler debug = DebugHandler.INSTANCE;
 		private TimeZone timezone = TimeZone.getDefault();
 		private Executor coroutineExecutor = defaultCoroutineExecutor;
+		private LuaTable globalTable = new LuaTable();
 
 		/**
 		 * Build a Lua state from this builder
@@ -404,6 +412,18 @@ public final class LuaState {
 		public Builder coroutineExecutor(Executor coroutineExecutor) {
 			if (coroutineExecutor == null) throw new NullPointerException("coroutineExecutor cannot be null");
 			this.coroutineExecutor = coroutineExecutor;
+			return this;
+		}
+
+		/**
+		 * Set the global table for this state.
+		 *
+		 * @param table The new global table
+		 * @return This builder
+		 */
+		public Builder globalTable(LuaTable table) {
+			if (table == null) throw new NullPointerException("table cannot be null");
+			this.globalTable = table;
 			return this;
 		}
 	}

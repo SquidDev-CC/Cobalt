@@ -36,7 +36,6 @@ public class Utf8Lib implements LuaLibrary {
 		state.loadedPackages.rawset("utf8", t);
 
 		codesIter = new Utf8CodesIter();
-		codesIter.setfenv(environment);
 
 		return t;
 	}

@@ -45,15 +45,15 @@ public class CompilerUnitTests {
 	@ParameterizedTest(name = ParameterizedTest.ARGUMENTS_WITH_NAMES_PLACEHOLDER)
 	@ValueSource(strings = {
 		"all", "api", "attrib", "big", "calls", "checktable", "closure", "code", "constructs", "db", "errors",
-		"events", "files", "gc", "literals", "locals", "main", "math", "nextvar", "pm", "sort", "strings", "vararg",
+		"events", "files", "gc", "literals", "locals", "main", "math", "nextvar", "pm", "sort", "strings",
 	})
-	public void lua51(String filename) throws IOException, CompileException {
-		CompileTestHelper.compareResults("/bytecode-compiler/lua5.1/", filename);
+	public void lua52(String filename) throws IOException, CompileException {
+		CompileTestHelper.compareResults("/bytecode-compiler/lua5.2/", filename);
 	}
 
 	@ParameterizedTest(name = ParameterizedTest.ARGUMENTS_WITH_NAMES_PLACEHOLDER)
 	@ValueSource(strings = {
-		"modulo", "construct", "bigattr", "controlchars", "comparators", "mathrandomseed", "varargs",
+		"modulo", "construct", "bigattr", "controlchars", "comparators", "mathrandomseed",
 	})
 	public void regression(String filename) throws IOException, CompileException {
 		CompileTestHelper.compareResults("/bytecode-compiler/regressions/", filename);
